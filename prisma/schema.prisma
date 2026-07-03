@@ -1,0 +1,156 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider = "mysql"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  SUPER_ADMIN
+  EDITOR
+  CONTRIBUTOR
+}
+
+enum ContentStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         Role     @default(EDITOR)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  sermons       Sermon[]
+  events        Event[]
+  announcements Announcement[]
+  pages         Page[]
+}
+
+model SermonSeries {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  description String?  @db.Text
+  coverImage  String?
+  createdAt   DateTime @default(now())
+
+  sermons Sermon[]
+}
+
+model Sermon {
+  id          String   @id @default(cuid())
+  title       String
+  speaker     String
+  date        DateTime
+  scripture   String?
+  youtubeUrl  String
+  description String?  @db.Text
+  thumbnail   String?
+  status      ContentStatus @default(PUBLISHED)
+
+  seriesId String?
+  series   SermonSeries? @relation(fields: [seriesId], references: [id])
+
+  authorId String
+  author   User   @relation(fields: [authorId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Event {
+  id           String   @id @default(cuid())
+  title        String
+  description  String?  @db.Text
+  startAt      DateTime
+  endAt        DateTime?
+  location     String?
+  recurring    Boolean  @default(false)
+  recurrenceRule String? // e.g. "WEEKLY;BYDAY=SU" if using iCal-style rules
+  image        String?
+  status       ContentStatus @default(PUBLISHED)
+
+  authorId String
+  author   User   @relation(fields: [authorId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Announcement {
+  id          String   @id @default(cuid())
+  title       String
+  body        String   @db.Text
+  publishAt   DateTime @default(now())
+  expireAt    DateTime?
+  priority    Int      @default(0)
+  status      ContentStatus @default(PUBLISHED)
+
+  authorId String
+  author   User   @relation(fields: [authorId], references: [id])
+
+  createdAt DateTime @default(now())
+}
+
+model Ministry {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  description String?  @db.Text
+  leaderName  String?
+  meetingTime String?
+  image       String?
+  createdAt   DateTime @default(now())
+}
+
+model StaffMember {
+  id        String  @id @default(cuid())
+  name      String
+  title     String
+  bio       String? @db.Text
+  photo     String?
+  sortOrder Int     @default(0)
+  createdAt DateTime @default(now())
+}
+
+model GalleryAlbum {
+  id          String   @id @default(cuid())
+  title       String
+  description String?  @db.Text
+  coverImage  String?
+  createdAt   DateTime @default(now())
+
+  photos GalleryPhoto[]
+}
+
+model GalleryPhoto {
+  id        String   @id @default(cuid())
+  url       String
+  caption   String?
+  albumId   String
+  album     GalleryAlbum @relation(fields: [albumId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+model Page {
+  id        String   @id @default(cuid())
+  title     String
+  slug      String   @unique
+  content   String   @db.Text
+  status    ContentStatus @default(PUBLISHED)
+
+  authorId String
+  author   User   @relation(fields: [authorId], references: [id])
+
+  updatedAt DateTime @updatedAt
+}
