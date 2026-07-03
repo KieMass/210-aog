@@ -1,7 +1,2 @@
-// Prisma configuration for Prisma 7+
-export default {
-  datasource: {
-    url: process.env.DATABASE_URL || 'mysql://placeholder:placeholder@localhost:3306/placeholder',
-  },
-};
+// This file is not used - root prisma.config.ts is used instead
 
