@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "AOG Church CMS",
-  description: "Content Management System for 210 Christian Assembly of God",
+  title: "210 Christian Gospel Assembly CMS",
+  description: "Content Management System for 210 Christian Gospel Assembly",
 };
 
 export default function RootLayout({

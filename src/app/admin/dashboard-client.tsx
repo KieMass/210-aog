@@ -10,7 +10,7 @@ export default function AdminDashboardClient({ session }: { session: Session }) 
       {/* Header */}
       <header className="bg-white shadow">
         <div className="max-w-7xl mx-auto px-4 py-6 flex justify-between items-center">
-          <h1 className="text-3xl font-bold">AOG Admin</h1>
+          <h1 className="text-3xl font-bold">210 CGA Admin</h1>
           <div className="flex items-center gap-4">
             <div>
               <p className="text-sm text-gray-600">{session.user?.email}</p>
