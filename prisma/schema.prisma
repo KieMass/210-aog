@@ -155,3 +155,14 @@ model Page {
 
   updatedAt DateTime @updatedAt
 }
+
+model PrayerRequest {
+  id            String   @id @default(cuid())
+  message       String   @db.Text
+  isAnonymous   Boolean  @default(true)
+  name          String?
+  wantsContact  Boolean  @default(false)
+  contactEmail  String?
+  contactPhone  String?
+  createdAt     DateTime @default(now())
+}

@@ -54,8 +54,14 @@ export default function ContactPage() {
             ))}
           </div>
 
-          <div className="mt-12 flex h-72 items-center justify-center rounded-2xl border border-dashed border-brand-100 bg-brand-50/60 text-brand-400">
-            Map coming soon
+          <div className="mt-12 overflow-hidden rounded-2xl border border-brand-100 shadow-sm">
+            <iframe
+              title="Map to 210 Christian Gospel Assembly"
+              src="https://www.google.com/maps?q=66+Joseph+Pollydore+Street,+Lodge+Housing+Scheme,+Georgetown,+Guyana&output=embed"
+              className="h-72 w-full"
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+            />
           </div>
         </div>
       </section>

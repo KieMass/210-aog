@@ -87,6 +87,14 @@ export default function AdminDashboardClient({ session }: { session: Session }) 
               <h3 className="font-bold mb-2">Gallery</h3>
               <p className="text-gray-600 text-sm">Manage photo galleries</p>
             </Link>
+
+            <Link
+              href="/admin/prayer-requests"
+              className="p-6 border rounded-lg hover:shadow-lg transition-shadow"
+            >
+              <h3 className="font-bold mb-2">Prayer Requests</h3>
+              <p className="text-gray-600 text-sm">View submitted prayer requests</p>
+            </Link>
           </div>
         </div>
       </main>
