@@ -1,9 +1,10 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Church, Menu, X } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { NAV_LINKS } from '@/lib/nav';
 
 export default function SiteHeader() {
@@ -14,8 +15,8 @@ export default function SiteHeader() {
     <header className="sticky top-0 z-50 border-b border-brand-100 bg-white/95 backdrop-blur">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
         <Link href="/" className="flex items-center gap-2" onClick={() => setOpen(false)}>
-          <span className="flex h-10 w-10 items-center justify-center rounded-full bg-brand-900 text-white">
-            <Church className="h-5 w-5" />
+          <span className="relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full">
+            <Image src="/images/church-logo.jpg" alt="210 CGA crest" fill className="object-cover" />
           </span>
           <span className="leading-tight">
             <span className="block text-lg font-bold text-brand-950">210 CGA</span>

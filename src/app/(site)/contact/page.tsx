@@ -5,7 +5,7 @@ const INFO_CARDS = [
   {
     icon: MapPin,
     title: 'Location',
-    lines: ['66 Joseph Pollydore Street', 'Georgetown, Guyana'],
+    lines: ['66 Joseph Pollydore Street', 'Lodge Housing Scheme', 'Georgetown, Guyana'],
   },
   {
     icon: Clock,

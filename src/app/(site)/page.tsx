@@ -1,24 +1,19 @@
 import Link from 'next/link';
-import {
-  CalendarDays,
-  Clock,
-  MapPin,
-  CirclePlay,
-  Users,
-  HeartHandshake,
-  Church,
-  Megaphone,
-} from 'lucide-react';
+import { CalendarDays, Clock, MapPin, CirclePlay } from 'lucide-react';
 import HeroSlider, { type HeroSlide } from '@/components/hero-slider';
 import SectionHeading from '@/components/section-heading';
 import YoutubeCta from '@/components/youtube-cta';
+import YoutubeVideoCard from '@/components/youtube-video-card';
+import { SERMON_VIDEOS } from '@/lib/sermons';
+import { MINISTRIES } from '@/lib/ministries';
+import { PROGRAMS } from '@/lib/programs';
 
 const SLIDES: HeroSlide[] = [
   {
     kicker: 'Welcome Home',
     title: 'A place to belong, grow, and worship together.',
     description:
-      '210 Christian Gospel Assembly is a vibrant, Christ-centered community church in Georgetown, Guyana. Join us this Sunday.',
+      '210 Christian Gospel Assembly is a vibrant, Christ-centered community church in the Lodge neighbourhood of Georgetown, Guyana. Join us this Sunday.',
     ctaLabel: 'Plan Your Visit',
     ctaHref: '/contact',
     gradient: 'bg-gradient-to-br from-brand-950 via-brand-700 to-brand-900',
@@ -34,7 +29,7 @@ const SLIDES: HeroSlide[] = [
   {
     kicker: 'Get Connected',
     title: 'Find your place in one of our ministries.',
-    description: 'From youth to worship to outreach, there is a place for you to serve and grow.',
+    description: 'From family life to community outreach, there is a place for you to serve and grow.',
     ctaLabel: 'Explore Ministries',
     ctaHref: '/ministries',
     gradient: 'bg-gradient-to-br from-brand-950 via-brand-400 to-brand-700',
@@ -43,27 +38,8 @@ const SLIDES: HeroSlide[] = [
 
 const QUICK_INFO = [
   { icon: Clock, label: 'Sunday Service', value: '10:00 AM' },
-  { icon: MapPin, label: 'Location', value: '210 Main Street' },
-  { icon: CirclePlay, label: 'Watch Online', value: 'Join our livestream' },
-];
-
-const SERMONS = [
-  { title: 'Faith That Moves Mountains', speaker: 'Pastor James Rivera', date: 'June 29, 2026' },
-  { title: 'Grace Upon Grace', speaker: 'Pastor James Rivera', date: 'June 22, 2026' },
-  { title: 'Walking in the Spirit', speaker: 'Pastor Maria Nguyen', date: 'June 15, 2026' },
-];
-
-const EVENTS = [
-  { title: 'Summer Youth Camp', date: 'July 18, 2026', time: '9:00 AM', location: 'Main Campus' },
-  { title: 'Community Outreach Day', date: 'July 25, 2026', time: '11:00 AM', location: 'Downtown Park' },
-  { title: 'Marriage Enrichment Night', date: 'August 2, 2026', time: '6:30 PM', location: 'Fellowship Hall' },
-];
-
-const MINISTRIES = [
-  { icon: Users, title: 'Youth Ministry', description: 'Helping students grow in faith and friendship.' },
-  { icon: HeartHandshake, title: 'Outreach & Missions', description: 'Serving our neighbors near and far.' },
-  { icon: Church, title: 'Worship Team', description: 'Leading our church in heartfelt worship.' },
-  { icon: Megaphone, title: "Women's Ministry", description: 'Building community through fellowship.' },
+  { icon: MapPin, label: 'Location', value: 'Lodge, Georgetown' },
+  { icon: CirclePlay, label: 'Watch Online', value: 'Recent services below' },
 ];
 
 export default function HomePage() {
@@ -97,24 +73,8 @@ export default function HomePage() {
             linkLabel="View all sermons"
           />
           <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {SERMONS.map((sermon) => (
-              <div
-                key={sermon.title}
-                className="group overflow-hidden rounded-2xl border border-brand-100 bg-white shadow-sm transition-shadow hover:shadow-md"
-              >
-                <div className="relative flex h-40 items-center justify-center bg-gradient-to-br from-brand-700 to-brand-950">
-                  <span className="flex h-14 w-14 items-center justify-center rounded-full bg-white/15 text-white transition-transform group-hover:scale-110">
-                    <CirclePlay className="h-7 w-7" />
-                  </span>
-                </div>
-                <div className="p-6">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-accent-600">
-                    {sermon.date}
-                  </p>
-                  <h3 className="mt-2 text-lg font-bold text-brand-950">{sermon.title}</h3>
-                  <p className="mt-1 text-sm text-brand-400">{sermon.speaker}</p>
-                </div>
-              </div>
+            {SERMON_VIDEOS.slice(0, 3).map((video) => (
+              <YoutubeVideoCard key={video.videoId} video={video} />
             ))}
           </div>
           <div className="mt-6">
@@ -127,31 +87,25 @@ export default function HomePage() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <SectionHeading
             kicker="What's Happening"
-            title="Upcoming Events"
+            title="Programs & Community Events"
             description="There's always something happening at 210 CGA — come be a part of it."
             linkHref="/events"
-            linkLabel="View all events"
+            linkLabel="Learn more"
           />
           <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {EVENTS.map((event) => (
+            {PROGRAMS.map((program) => (
               <div
-                key={event.title}
+                key={program.title}
                 className="flex flex-col rounded-2xl border border-brand-100 bg-white p-6 shadow-sm transition-shadow hover:shadow-md"
               >
                 <span className="flex h-12 w-12 items-center justify-center rounded-full bg-accent-500/15 text-accent-600">
                   <CalendarDays className="h-5 w-5" />
                 </span>
-                <h3 className="mt-4 text-lg font-bold text-brand-950">{event.title}</h3>
-                <div className="mt-3 space-y-1.5 text-sm text-brand-400">
-                  <p className="flex items-center gap-2">
-                    <CalendarDays className="h-4 w-4" />
-                    {event.date} · {event.time}
-                  </p>
-                  <p className="flex items-center gap-2">
-                    <MapPin className="h-4 w-4" />
-                    {event.location}
-                  </p>
-                </div>
+                <h3 className="mt-4 text-lg font-bold text-brand-950">{program.title}</h3>
+                <p className="mt-2 text-xs font-semibold uppercase tracking-wide text-brand-400">
+                  {program.frequency}
+                </p>
+                <p className="mt-2 text-sm text-brand-400">{program.description}</p>
               </div>
             ))}
           </div>

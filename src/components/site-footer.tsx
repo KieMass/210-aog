@@ -1,5 +1,6 @@
+import Image from 'next/image';
 import Link from 'next/link';
-import { Church, Mail, Phone, MapPin } from 'lucide-react';
+import { Mail, Phone, MapPin } from 'lucide-react';
 import { NAV_LINKS } from '@/lib/nav';
 
 const SOCIALS = [
@@ -14,8 +15,8 @@ export default function SiteFooter() {
         <div className="grid gap-10 md:grid-cols-4">
           <div>
             <div className="flex items-center gap-2">
-              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10">
-                <Church className="h-5 w-5 text-accent-400" />
+              <span className="relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full">
+                <Image src="/images/church-logo.jpg" alt="210 CGA crest" fill className="object-cover" />
               </span>
               <span className="text-lg font-bold text-white">210 CGA</span>
             </div>
@@ -68,7 +69,7 @@ export default function SiteFooter() {
             <ul className="mt-4 space-y-3 text-sm text-brand-100/80">
               <li className="flex items-start gap-2">
                 <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-accent-400" />
-                <span>66 Joseph Pollydore Street, Georgetown, Guyana</span>
+                <span>66 Joseph Pollydore Street, Lodge Housing Scheme, Georgetown, Guyana</span>
               </li>
               <li className="flex items-center gap-2">
                 <Phone className="h-4 w-4 shrink-0 text-accent-400" />
