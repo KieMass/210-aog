@@ -1,11 +1,11 @@
 import Link from 'next/link';
-import { CalendarDays, Clock, MapPin, CirclePlay } from 'lucide-react';
+import { CalendarDays, Clock, MapPin, CirclePlay, HeartHandshake } from 'lucide-react';
 import HeroSlider, { type HeroSlide } from '@/components/hero-slider';
 import SectionHeading from '@/components/section-heading';
 import YoutubeCta from '@/components/youtube-cta';
 import YoutubeVideoCard from '@/components/youtube-video-card';
-import { SERMON_VIDEOS } from '@/lib/sermons';
-import { MINISTRIES } from '@/lib/ministries';
+import { prisma } from '@/lib/prisma';
+import { sermonToVideo } from '@/lib/youtube';
 import { PROGRAMS } from '@/lib/programs';
 
 const SLIDES: HeroSlide[] = [
@@ -42,7 +42,15 @@ const QUICK_INFO = [
   { icon: CirclePlay, label: 'Watch Online', value: 'Recent services below' },
 ];
 
-export default function HomePage() {
+export default async function HomePage() {
+  const sermons = await prisma.sermon.findMany({
+    where: { status: 'PUBLISHED' },
+    orderBy: { date: 'desc' },
+    take: 3,
+  });
+  const videos = sermons.map(sermonToVideo).filter((v) => v !== null);
+  const ministries = await prisma.ministry.findMany({ orderBy: { name: 'asc' }, take: 4 });
+
   return (
     <>
       <HeroSlider slides={SLIDES} />
@@ -72,11 +80,17 @@ export default function HomePage() {
             linkHref="/sermons"
             linkLabel="View all sermons"
           />
-          <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {SERMON_VIDEOS.slice(0, 3).map((video) => (
-              <YoutubeVideoCard key={video.videoId} video={video} />
-            ))}
-          </div>
+          {videos.length > 0 ? (
+            <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {videos.map((video) => (
+                <YoutubeVideoCard key={video.videoId} video={video} />
+              ))}
+            </div>
+          ) : (
+            <p className="mt-10 text-center text-brand-400">
+              No sermons have been posted yet — check back soon.
+            </p>
+          )}
           <div className="mt-6">
             <YoutubeCta />
           </div>
@@ -121,20 +135,26 @@ export default function HomePage() {
             linkHref="/ministries"
             linkLabel="View all ministries"
           />
-          <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {MINISTRIES.map((ministry) => (
-              <div
-                key={ministry.title}
-                className="rounded-2xl border border-brand-100 bg-white p-6 text-center shadow-sm transition-shadow hover:shadow-md"
-              >
-                <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-brand-900 text-accent-400">
-                  <ministry.icon className="h-6 w-6" />
-                </span>
-                <h3 className="mt-4 font-bold text-brand-950">{ministry.title}</h3>
-                <p className="mt-2 text-sm text-brand-400">{ministry.description}</p>
-              </div>
-            ))}
-          </div>
+          {ministries.length > 0 ? (
+            <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+              {ministries.map((ministry) => (
+                <div
+                  key={ministry.id}
+                  className="rounded-2xl border border-brand-100 bg-white p-6 text-center shadow-sm transition-shadow hover:shadow-md"
+                >
+                  <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-brand-900 text-accent-400">
+                    <HeartHandshake className="h-6 w-6" />
+                  </span>
+                  <h3 className="mt-4 font-bold text-brand-950">{ministry.name}</h3>
+                  {ministry.description && (
+                    <p className="mt-2 text-sm text-brand-400">{ministry.description}</p>
+                  )}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="mt-10 text-center text-brand-400">Ministry details are coming soon.</p>
+          )}
         </div>
       </section>
 

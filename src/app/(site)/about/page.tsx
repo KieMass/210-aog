@@ -1,9 +1,12 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { Cross, Mic, HeartHandshake } from 'lucide-react';
+import { Cross, Mic, HeartHandshake, User } from 'lucide-react';
 import PageHero from '@/components/page-hero';
+import { prisma } from '@/lib/prisma';
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const staff = await prisma.staffMember.findMany({ orderBy: { sortOrder: 'asc' } });
+
   return (
     <>
       <PageHero
@@ -69,6 +72,37 @@ export default function AboutPage() {
           </div>
         </div>
       </section>
+
+      {staff.length > 0 && (
+        <section className="py-20">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <p className="text-sm font-semibold uppercase tracking-widest text-accent-600">
+              Leadership
+            </p>
+            <h2 className="mt-2 text-3xl font-bold text-brand-950">Our Team</h2>
+            <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+              {staff.map((member) => (
+                <div
+                  key={member.id}
+                  className="rounded-2xl border border-brand-100 bg-white p-6 text-center shadow-sm"
+                >
+                  <div className="mx-auto flex h-20 w-20 items-center justify-center overflow-hidden rounded-full bg-brand-50">
+                    {member.photo ? (
+                      // eslint-disable-next-line @next/next/no-img-element -- admin-entered URLs can be any host, next/image requires an allowlist
+                      <img src={member.photo} alt={member.name} className="h-full w-full object-cover" />
+                    ) : (
+                      <User className="h-8 w-8 text-brand-700" />
+                    )}
+                  </div>
+                  <h3 className="mt-4 font-bold text-brand-950">{member.name}</h3>
+                  <p className="text-sm text-accent-600">{member.title}</p>
+                  {member.bio && <p className="mt-2 text-sm text-brand-400">{member.bio}</p>}
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       <section className="py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
