@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { signOut } from 'next-auth/react';
+import { ExternalLink } from 'lucide-react';
 import type { Session } from 'next-auth';
 
 const ADMIN_LINKS = [
@@ -28,6 +29,13 @@ export default function AdminNav({ session }: { session: Session }) {
             210 CGA Admin
           </Link>
           <div className="flex items-center gap-4">
+            <Link
+              href="/"
+              className="hidden items-center gap-1.5 rounded px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-100 sm:flex"
+            >
+              View Site
+              <ExternalLink className="h-3.5 w-3.5" />
+            </Link>
             <div className="text-right text-sm">
               <p className="text-gray-600">{session.user?.email}</p>
               <p className="text-xs text-gray-500">{session.user?.role}</p>
