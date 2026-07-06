@@ -20,6 +20,10 @@ const ADMIN_LINKS = [
 
 export default function AdminNav({ session }: { session: Session }) {
   const pathname = usePathname();
+  const links =
+    session.user?.role === 'SUPER_ADMIN'
+      ? [...ADMIN_LINKS, { href: '/admin/users', label: 'Users' }]
+      : ADMIN_LINKS;
 
   return (
     <header className="bg-white shadow">
@@ -49,7 +53,7 @@ export default function AdminNav({ session }: { session: Session }) {
           </div>
         </div>
         <nav className="mt-4 flex flex-wrap gap-1 border-t pt-3">
-          {ADMIN_LINKS.map((link) => {
+          {links.map((link) => {
             const active = link.href === '/admin' ? pathname === '/admin' : pathname.startsWith(link.href);
             return (
               <Link

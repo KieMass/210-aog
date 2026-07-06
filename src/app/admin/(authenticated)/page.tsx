@@ -8,6 +8,7 @@ import {
   Users,
   Images,
   HandHeart,
+  Shield,
   ArrowRight,
 } from 'lucide-react';
 import { verifySession } from '@/lib/dal';
@@ -16,7 +17,9 @@ import { prisma } from '@/lib/prisma';
 export default async function AdminDashboard() {
   const session = await verifySession();
 
-  const [sermons, events, announcements, pages, ministries, staff, albums, prayerRequests] =
+  const isSuperAdmin = session.user?.role === 'SUPER_ADMIN';
+
+  const [sermons, events, announcements, pages, ministries, staff, albums, prayerRequests, userCount] =
     await Promise.all([
       prisma.sermon.count(),
       prisma.event.count(),
@@ -26,6 +29,7 @@ export default async function AdminDashboard() {
       prisma.staffMember.count(),
       prisma.galleryAlbum.count(),
       prisma.prayerRequest.count(),
+      isSuperAdmin ? prisma.user.count() : Promise.resolve(0),
     ]);
 
   const sections = [
@@ -93,6 +97,18 @@ export default async function AdminDashboard() {
       count: prayerRequests,
       color: 'bg-pink-50 text-pink-600',
     },
+    ...(isSuperAdmin
+      ? [
+          {
+            href: '/admin/users',
+            title: 'Users',
+            description: 'Manage admin accounts and roles',
+            icon: Shield,
+            count: userCount,
+            color: 'bg-orange-50 text-orange-600',
+          },
+        ]
+      : []),
   ];
 
   return (
