@@ -2,9 +2,10 @@
 
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
-import { verifySession } from '@/lib/dal';
+import { verifySession, requireRole } from '@/lib/dal';
 import { prisma } from '@/lib/prisma';
 import { slugify } from '@/lib/slug';
+import { safeDelete } from '@/lib/safe-delete';
 
 function readMinistryForm(formData: FormData) {
   return {
@@ -47,8 +48,8 @@ export async function updateMinistry(id: string, formData: FormData) {
 
 export async function deleteMinistry(id: string) {
   'use server';
-  await verifySession();
-  await prisma.ministry.delete({ where: { id } });
+  await requireRole('SUPER_ADMIN', 'EDITOR');
+  await safeDelete(() => prisma.ministry.delete({ where: { id } }));
 
   revalidatePath('/admin/ministries');
   revalidatePath('/ministries');

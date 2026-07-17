@@ -6,6 +6,7 @@ import bcrypt from 'bcryptjs';
 import { Prisma, Role } from '@prisma/client';
 import { requireRole } from '@/lib/dal';
 import { prisma } from '@/lib/prisma';
+import { safeDelete } from '@/lib/safe-delete';
 
 export type UserFormState = { ok: true } | { ok: false; error: string } | undefined;
 
@@ -119,6 +120,6 @@ export async function deleteUser(id: string) {
     }
   }
 
-  await prisma.user.delete({ where: { id } });
+  await safeDelete(() => prisma.user.delete({ where: { id } }));
   revalidatePath('/admin/users');
 }

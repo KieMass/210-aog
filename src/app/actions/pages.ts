@@ -2,9 +2,10 @@
 
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
-import { verifySession } from '@/lib/dal';
+import { verifySession, requireRole } from '@/lib/dal';
 import { prisma } from '@/lib/prisma';
 import { slugify } from '@/lib/slug';
+import { safeDelete } from '@/lib/safe-delete';
 import { ContentStatus } from '@prisma/client';
 
 function readPageForm(formData: FormData) {
@@ -43,8 +44,8 @@ export async function updatePage(id: string, formData: FormData) {
 
 export async function deletePage(id: string) {
   'use server';
-  await verifySession();
-  await prisma.page.delete({ where: { id } });
+  await requireRole('SUPER_ADMIN', 'EDITOR');
+  await safeDelete(() => prisma.page.delete({ where: { id } }));
 
   revalidatePath('/admin/pages');
 }

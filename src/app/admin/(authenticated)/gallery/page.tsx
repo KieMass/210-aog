@@ -1,10 +1,13 @@
 import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
 import { deleteAlbum } from '@/app/actions/gallery';
+import { verifySession } from '@/lib/dal';
 import AdminPageHeader from '@/components/admin-page-header';
 import DeleteButton from '@/components/delete-button';
 
 export default async function AdminGalleryPage() {
+  const session = await verifySession();
+  const canDelete = session.user?.role === 'SUPER_ADMIN' || session.user?.role === 'EDITOR';
   const albums = await prisma.galleryAlbum.findMany({
     orderBy: { createdAt: 'desc' },
     include: { _count: { select: { photos: true } } },
@@ -36,9 +39,11 @@ export default async function AdminGalleryPage() {
                       <Link href={`/admin/gallery/${album.id}`} className="font-medium text-blue-600 hover:text-blue-800">
                         Manage
                       </Link>
-                      <form action={deleteAlbum.bind(null, album.id)}>
-                        <DeleteButton />
-                      </form>
+                      {canDelete && (
+                        <form action={deleteAlbum.bind(null, album.id)}>
+                          <DeleteButton />
+                        </form>
+                      )}
                     </div>
                   </td>
                 </tr>

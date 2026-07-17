@@ -1,10 +1,13 @@
 import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
 import { deleteEvent } from '@/app/actions/events';
+import { verifySession } from '@/lib/dal';
 import AdminPageHeader from '@/components/admin-page-header';
 import DeleteButton from '@/components/delete-button';
 
 export default async function AdminEventsPage() {
+  const session = await verifySession();
+  const canDelete = session.user?.role === 'SUPER_ADMIN' || session.user?.role === 'EDITOR';
   const events = await prisma.event.findMany({ orderBy: { startAt: 'desc' } });
 
   return (
@@ -37,9 +40,11 @@ export default async function AdminEventsPage() {
                       <Link href={`/admin/events/${event.id}`} className="font-medium text-blue-600 hover:text-blue-800">
                         Edit
                       </Link>
-                      <form action={deleteEvent.bind(null, event.id)}>
-                        <DeleteButton />
-                      </form>
+                      {canDelete && (
+                        <form action={deleteEvent.bind(null, event.id)}>
+                          <DeleteButton />
+                        </form>
+                      )}
                     </div>
                   </td>
                 </tr>

@@ -18,6 +18,7 @@ export default async function AdminDashboard() {
   const session = await verifySession();
 
   const isSuperAdmin = session.user?.role === 'SUPER_ADMIN';
+  const canSeePrayerRequests = isSuperAdmin || session.user?.role === 'EDITOR';
 
   const [sermons, events, announcements, pages, ministries, staff, albums, prayerRequests, userCount] =
     await Promise.all([
@@ -28,7 +29,7 @@ export default async function AdminDashboard() {
       prisma.ministry.count(),
       prisma.staffMember.count(),
       prisma.galleryAlbum.count(),
-      prisma.prayerRequest.count(),
+      canSeePrayerRequests ? prisma.prayerRequest.count() : Promise.resolve(0),
       isSuperAdmin ? prisma.user.count() : Promise.resolve(0),
     ]);
 
@@ -89,14 +90,18 @@ export default async function AdminDashboard() {
       count: albums,
       color: 'bg-purple-50 text-purple-600',
     },
-    {
-      href: '/admin/prayer-requests',
-      title: 'Prayer Requests',
-      description: 'View submitted prayer requests',
-      icon: HandHeart,
-      count: prayerRequests,
-      color: 'bg-pink-50 text-pink-600',
-    },
+    ...(canSeePrayerRequests
+      ? [
+          {
+            href: '/admin/prayer-requests',
+            title: 'Prayer Requests',
+            description: 'View submitted prayer requests',
+            icon: HandHeart,
+            count: prayerRequests,
+            color: 'bg-pink-50 text-pink-600',
+          },
+        ]
+      : []),
     ...(isSuperAdmin
       ? [
           {

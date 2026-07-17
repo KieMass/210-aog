@@ -1,10 +1,13 @@
 import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
 import { deleteMinistry } from '@/app/actions/ministries';
+import { verifySession } from '@/lib/dal';
 import AdminPageHeader from '@/components/admin-page-header';
 import DeleteButton from '@/components/delete-button';
 
 export default async function AdminMinistriesPage() {
+  const session = await verifySession();
+  const canDelete = session.user?.role === 'SUPER_ADMIN' || session.user?.role === 'EDITOR';
   const ministries = await prisma.ministry.findMany({ orderBy: { name: 'asc' } });
 
   return (
@@ -35,9 +38,11 @@ export default async function AdminMinistriesPage() {
                       <Link href={`/admin/ministries/${ministry.id}`} className="font-medium text-blue-600 hover:text-blue-800">
                         Edit
                       </Link>
-                      <form action={deleteMinistry.bind(null, ministry.id)}>
-                        <DeleteButton />
-                      </form>
+                      {canDelete && (
+                        <form action={deleteMinistry.bind(null, ministry.id)}>
+                          <DeleteButton />
+                        </form>
+                      )}
                     </div>
                   </td>
                 </tr>

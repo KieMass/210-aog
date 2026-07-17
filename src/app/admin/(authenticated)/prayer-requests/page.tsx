@@ -1,9 +1,11 @@
-import { verifySession } from '@/lib/dal';
+import { requireRole } from '@/lib/dal';
 import { prisma } from '@/lib/prisma';
 import AdminPageHeader from '@/components/admin-page-header';
 
 export default async function AdminPrayerRequestsPage() {
-  await verifySession();
+  // Restricted beyond a plain login check: these submissions can include
+  // sensitive personal contact details from people seeking pastoral care.
+  await requireRole('SUPER_ADMIN', 'EDITOR');
 
   const requests = await prisma.prayerRequest.findMany({
     orderBy: { createdAt: 'desc' },

@@ -1,10 +1,13 @@
 import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
 import { deleteAnnouncement } from '@/app/actions/announcements';
+import { verifySession } from '@/lib/dal';
 import AdminPageHeader from '@/components/admin-page-header';
 import DeleteButton from '@/components/delete-button';
 
 export default async function AdminAnnouncementsPage() {
+  const session = await verifySession();
+  const canDelete = session.user?.role === 'SUPER_ADMIN' || session.user?.role === 'EDITOR';
   const announcements = await prisma.announcement.findMany({
     orderBy: [{ priority: 'desc' }, { publishAt: 'desc' }],
   });
@@ -39,9 +42,11 @@ export default async function AdminAnnouncementsPage() {
                       <Link href={`/admin/announcements/${a.id}`} className="font-medium text-blue-600 hover:text-blue-800">
                         Edit
                       </Link>
-                      <form action={deleteAnnouncement.bind(null, a.id)}>
-                        <DeleteButton />
-                      </form>
+                      {canDelete && (
+                        <form action={deleteAnnouncement.bind(null, a.id)}>
+                          <DeleteButton />
+                        </form>
+                      )}
                     </div>
                   </td>
                 </tr>

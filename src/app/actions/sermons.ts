@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { verifySession } from '@/lib/dal';
 import { prisma } from '@/lib/prisma';
+import { safeDelete } from '@/lib/safe-delete';
 import { ContentStatus } from '@prisma/client';
 
 function readSermonForm(formData: FormData) {
@@ -48,7 +49,7 @@ export async function updateSermon(id: string, formData: FormData) {
 export async function deleteSermon(id: string) {
   'use server';
   await verifySession();
-  await prisma.sermon.delete({ where: { id } });
+  await safeDelete(() => prisma.sermon.delete({ where: { id } }));
 
   revalidatePath('/admin/sermons');
   revalidatePath('/sermons');

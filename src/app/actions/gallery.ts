@@ -2,8 +2,9 @@
 
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
-import { verifySession } from '@/lib/dal';
+import { verifySession, requireRole } from '@/lib/dal';
 import { prisma } from '@/lib/prisma';
+import { safeDelete } from '@/lib/safe-delete';
 
 export async function createAlbum(formData: FormData) {
   await verifySession();
@@ -40,8 +41,8 @@ export async function updateAlbum(id: string, formData: FormData) {
 
 export async function deleteAlbum(id: string) {
   'use server';
-  await verifySession();
-  await prisma.galleryAlbum.delete({ where: { id } });
+  await requireRole('SUPER_ADMIN', 'EDITOR');
+  await safeDelete(() => prisma.galleryAlbum.delete({ where: { id } }));
 
   revalidatePath('/admin/gallery');
   revalidatePath('/gallery');
@@ -67,8 +68,8 @@ export async function addPhoto(albumId: string, formData: FormData) {
 
 export async function deletePhoto(albumId: string, photoId: string) {
   'use server';
-  await verifySession();
-  await prisma.galleryPhoto.delete({ where: { id: photoId } });
+  await requireRole('SUPER_ADMIN', 'EDITOR');
+  await safeDelete(() => prisma.galleryPhoto.delete({ where: { id: photoId } }));
 
   revalidatePath(`/admin/gallery/${albumId}`);
   revalidatePath('/gallery');

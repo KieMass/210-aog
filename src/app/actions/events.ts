@@ -2,8 +2,9 @@
 
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
-import { verifySession } from '@/lib/dal';
+import { verifySession, requireRole } from '@/lib/dal';
 import { prisma } from '@/lib/prisma';
+import { safeDelete } from '@/lib/safe-delete';
 import { ContentStatus } from '@prisma/client';
 
 function readEventForm(formData: FormData) {
@@ -48,8 +49,8 @@ export async function updateEvent(id: string, formData: FormData) {
 
 export async function deleteEvent(id: string) {
   'use server';
-  await verifySession();
-  await prisma.event.delete({ where: { id } });
+  await requireRole('SUPER_ADMIN', 'EDITOR');
+  await safeDelete(() => prisma.event.delete({ where: { id } }));
 
   revalidatePath('/admin/events');
   revalidatePath('/events');

@@ -1,11 +1,14 @@
 import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import { updateAlbum, addPhoto, deletePhoto } from '@/app/actions/gallery';
+import { verifySession } from '@/lib/dal';
 import AdminPageHeader from '@/components/admin-page-header';
 import AlbumForm from '@/components/forms/album-form';
 import DeleteButton from '@/components/delete-button';
 
 export default async function EditAlbumPage({ params }: { params: Promise<{ id: string }> }) {
+  const session = await verifySession();
+  const canDelete = session.user?.role === 'SUPER_ADMIN' || session.user?.role === 'EDITOR';
   const { id } = await params;
   const album = await prisma.galleryAlbum.findUnique({
     where: { id },
@@ -58,9 +61,11 @@ export default async function EditAlbumPage({ params }: { params: Promise<{ id: 
                 <img src={photo.url} alt={photo.caption ?? ''} className="h-40 w-full object-cover" />
                 <div className="flex items-center justify-between p-3">
                   <span className="truncate text-sm text-gray-600">{photo.caption || '—'}</span>
-                  <form action={deletePhoto.bind(null, id, photo.id)}>
-                    <DeleteButton />
-                  </form>
+                  {canDelete && (
+                    <form action={deletePhoto.bind(null, id, photo.id)}>
+                      <DeleteButton />
+                    </form>
+                  )}
                 </div>
               </div>
             ))}

@@ -1,10 +1,13 @@
 import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
 import { deletePage } from '@/app/actions/pages';
+import { verifySession } from '@/lib/dal';
 import AdminPageHeader from '@/components/admin-page-header';
 import DeleteButton from '@/components/delete-button';
 
 export default async function AdminPagesPage() {
+  const session = await verifySession();
+  const canDelete = session.user?.role === 'SUPER_ADMIN' || session.user?.role === 'EDITOR';
   const pages = await prisma.page.findMany({ orderBy: { updatedAt: 'desc' } });
 
   return (
@@ -35,9 +38,11 @@ export default async function AdminPagesPage() {
                       <Link href={`/admin/pages/${page.id}`} className="font-medium text-blue-600 hover:text-blue-800">
                         Edit
                       </Link>
-                      <form action={deletePage.bind(null, page.id)}>
-                        <DeleteButton />
-                      </form>
+                      {canDelete && (
+                        <form action={deletePage.bind(null, page.id)}>
+                          <DeleteButton />
+                        </form>
+                      )}
                     </div>
                   </td>
                 </tr>

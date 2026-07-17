@@ -1,10 +1,13 @@
 import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
 import { deleteStaffMember } from '@/app/actions/staff';
+import { verifySession } from '@/lib/dal';
 import AdminPageHeader from '@/components/admin-page-header';
 import DeleteButton from '@/components/delete-button';
 
 export default async function AdminStaffPage() {
+  const session = await verifySession();
+  const canDelete = session.user?.role === 'SUPER_ADMIN' || session.user?.role === 'EDITOR';
   const staff = await prisma.staffMember.findMany({ orderBy: { sortOrder: 'asc' } });
 
   return (
@@ -35,9 +38,11 @@ export default async function AdminStaffPage() {
                       <Link href={`/admin/staff/${member.id}`} className="font-medium text-blue-600 hover:text-blue-800">
                         Edit
                       </Link>
-                      <form action={deleteStaffMember.bind(null, member.id)}>
-                        <DeleteButton />
-                      </form>
+                      {canDelete && (
+                        <form action={deleteStaffMember.bind(null, member.id)}>
+                          <DeleteButton />
+                        </form>
+                      )}
                     </div>
                   </td>
                 </tr>

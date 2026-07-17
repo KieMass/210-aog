@@ -15,15 +15,16 @@ const ADMIN_LINKS = [
   { href: '/admin/ministries', label: 'Ministries' },
   { href: '/admin/staff', label: 'Staff' },
   { href: '/admin/gallery', label: 'Gallery' },
-  { href: '/admin/prayer-requests', label: 'Prayer Requests' },
 ];
 
 export default function AdminNav({ session }: { session: Session }) {
   const pathname = usePathname();
-  const links =
-    session.user?.role === 'SUPER_ADMIN'
-      ? [...ADMIN_LINKS, { href: '/admin/users', label: 'Users' }]
-      : ADMIN_LINKS;
+  const canSeePrayerRequests = session.user?.role === 'SUPER_ADMIN' || session.user?.role === 'EDITOR';
+  const links = [
+    ...ADMIN_LINKS,
+    ...(canSeePrayerRequests ? [{ href: '/admin/prayer-requests', label: 'Prayer Requests' }] : []),
+    ...(session.user?.role === 'SUPER_ADMIN' ? [{ href: '/admin/users', label: 'Users' }] : []),
+  ];
 
   return (
     <header className="bg-white shadow">

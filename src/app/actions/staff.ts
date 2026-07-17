@@ -2,8 +2,9 @@
 
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
-import { verifySession } from '@/lib/dal';
+import { verifySession, requireRole } from '@/lib/dal';
 import { prisma } from '@/lib/prisma';
+import { safeDelete } from '@/lib/safe-delete';
 
 function readStaffForm(formData: FormData) {
   return {
@@ -39,8 +40,8 @@ export async function updateStaffMember(id: string, formData: FormData) {
 
 export async function deleteStaffMember(id: string) {
   'use server';
-  await verifySession();
-  await prisma.staffMember.delete({ where: { id } });
+  await requireRole('SUPER_ADMIN', 'EDITOR');
+  await safeDelete(() => prisma.staffMember.delete({ where: { id } }));
 
   revalidatePath('/admin/staff');
   revalidatePath('/about');
